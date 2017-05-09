@@ -1,16 +1,21 @@
-package com.shoppingcart
+package com.pointofsale
 
-import com.pointofsale.PointOfSale
+import com.pointofsale.model.Item
 import com.pointofsale.utilities.RoundAmount
+import org.mockito.ArgumentMatchers._
+import org.mockito.Mockito._
 import org.scalatest.{FeatureSpec, GivenWhenThen}
 
 class PointOfSaleUnitTests extends FeatureSpec with GivenWhenThen with TestEnvironment {
 
-  feature("The point of sale system adds up the prices correctly") {
+  feature("The point of sale system adds up the prices correctly, without any offers") {
+
+    when(offerRepository.getActiveOffers(any(classOf[Item]))).thenReturn(None)
+
     scenario("One item") {
       Given("There is one item scanned")
       val testItem = testItems.head
-      val cart = PointOfSale(Seq(testItem.name), itemRepository)
+      val cart = PointOfSale(Seq(testItem.name), itemRepository, offerRepository)
 
       When("The checkout method is invoked")
       val result = cart.checkout
@@ -23,7 +28,7 @@ class PointOfSaleUnitTests extends FeatureSpec with GivenWhenThen with TestEnvir
     scenario("Two of the same items") {
       Given("There are two items scanned")
       val testItem = testItems.head
-      val cart = PointOfSale(Seq(testItem.name, testItem.name), itemRepository)
+      val cart = PointOfSale(Seq(testItem.name, testItem.name), itemRepository, offerRepository)
 
       When("The checkout method is invoked")
       val result = cart.checkout
@@ -37,7 +42,7 @@ class PointOfSaleUnitTests extends FeatureSpec with GivenWhenThen with TestEnvir
       Given("There are two items scanned")
       val testItem1 = testItems.head
       val testItem2 = testItems.tail.head
-      val cart = PointOfSale(Seq(testItem1.name, testItem2.name), itemRepository)
+      val cart = PointOfSale(Seq(testItem1.name, testItem2.name), itemRepository, offerRepository)
 
       When("The checkout method is invoked")
       val result = cart.checkout
@@ -51,7 +56,7 @@ class PointOfSaleUnitTests extends FeatureSpec with GivenWhenThen with TestEnvir
       Given("There are multiple items scanned")
       val testItem1 = testItems.head
       val testItem2 = testItems.tail.head
-      val cart = PointOfSale(Seq(testItem1.name, testItem2.name, testItem2.name, testItem1.name, testItem2.name), itemRepository)
+      val cart = PointOfSale(Seq(testItem1.name, testItem2.name, testItem2.name, testItem1.name, testItem2.name), itemRepository, offerRepository)
 
       When("The checkout method is invoked")
       val result = cart.checkout
